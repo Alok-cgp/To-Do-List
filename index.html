@@ -85,29 +85,56 @@
     <ul id="taskList"></ul>
   </div>
 
-  <script>
-    function addTask() {
-      const input = document.getElementById('taskInput');
-      const taskText = input.value.trim();
+<script>
+  window.onload = function () {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    savedTasks.forEach(task => {
+      addTaskToDOM(task);
+    });
+  };
 
-      if (taskText === '') {
-        alert("Please enter a task!");
-        return;
-      }
+  function addTask() {
+    const input = document.getElementById('taskInput');
+    const taskText = input.value.trim();
 
-      const li = document.createElement('li');
-      li.textContent = taskText;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.textContent = '✕';
-      removeBtn.className = 'remove-btn';
-      removeBtn.onclick = () => li.remove();
-
-      li.appendChild(removeBtn);
-      document.getElementById('taskList').appendChild(li);
-
-      input.value = '';
+    if (taskText === '') {
+      alert("Please enter a task!");
+      return;
     }
-  </script>
+
+    addTaskToDOM(taskText);
+    saveTask(taskText);
+    input.value = '';
+  }
+
+  function addTaskToDOM(taskText) {
+    const li = document.createElement('li');
+    li.textContent = taskText;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '✕';
+    removeBtn.className = 'remove-btn';
+    removeBtn.onclick = function () {
+      li.remove();
+      removeTask(taskText);
+    };
+
+    li.appendChild(removeBtn);
+    document.getElementById('taskList').appendChild(li);
+  }
+
+  function saveTask(taskText) {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.push(taskText);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function removeTask(taskText) {
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks = tasks.filter(task => task !== taskText);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+</script>
+
 </body>
 </html>
